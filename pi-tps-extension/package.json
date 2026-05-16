@@ -1,0 +1,24 @@
+{
+  "name": "@pi/tps-metrics",
+  "version": "1.0.0",
+  "description": "Real-time TPS (tokens per second) metrics for Pi coding agent",
+  "main": "dist/extension.js",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch"
+  },
+  "devDependencies": {
+    "@earendil-works/pi-coding-agent": "latest",
+    "typescript": "^5.0.0"
+  },
+  "pi": {
+    "extensions": [
+      {
+        "name": "tps-metrics",
+        "description": "Display real-time TPS metrics during streaming",
+        "entry": "dist/extension.js"
+      }
+    ]
+  }
+}
