@@ -10,10 +10,13 @@ Collection of extensions and skills for [Pi](https://github.com/earendil-works/p
 
 ## Usage
 
-Copy the desired skill file to `~/.pi/skills/`:
+### Installing an Extension
+
+Copy the extension source to `~/.pi/agent/extensions/` for auto-discovery:
 
 ```bash
-cp pi-tps-extension/src/extension.ts ~/.pi/skills/tps-metrics.ts
+# TPS metrics
+cp pi-tps-extension/src/extension.ts ~/.pi/agent/extensions/tps-metrics.ts
 ```
 
 Then reload Pi:
