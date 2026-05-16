@@ -34,8 +34,8 @@ export default function (pi: ExtensionAPI) {
 
   // ── Helpers ──────────────────────────────────────────────────────────────
 
-  function loadConfig(): void {
-    const entries = ctx?.sessionManager?.getEntries() ?? [];
+  function loadConfig(ctx: ExtensionContext): void {
+    const entries = ctx.sessionManager?.getEntries() ?? [];
     const lastConfigEntry = [...entries].reverse().find(
       (e: any) => e.type === "custom" && e.customType === "code-review-config",
     ) as any | undefined;
@@ -750,7 +750,7 @@ After the review, provide a summary with:
   // ── Session lifecycle ───────────────────────────────────────────────────
 
   pi.on("session_start", async (_event, ctx) => {
-    loadConfig();
+    loadConfig(ctx);
 
     // Restore last review
     const entries = ctx.sessionManager.getEntries();
