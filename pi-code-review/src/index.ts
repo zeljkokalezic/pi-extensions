@@ -678,6 +678,10 @@ export default function (pi: ExtensionAPI) {
         description = `file ${target}`;
       } else if (mode === "diff") {
         if (!target) return;
+        if (!isSafeGitRef(target)) {
+          ctx.ui.notify(`Invalid git ref: ${target}`, "error");
+          return;
+        }
         const { stdout } = await execGit(`diff ${target}`, ctx);
         if (!stdout.trim()) {
           ctx.ui.notify(`No diff found for ${target}.`, "info");
@@ -687,6 +691,10 @@ export default function (pi: ExtensionAPI) {
         description = `diff ${target}`;
       } else if (mode === "commit") {
         if (!target) return;
+        if (!isSafeGitRef(target)) {
+          ctx.ui.notify(`Invalid git ref: ${target}`, "error");
+          return;
+        }
         const { stdout } = await execGit(`show --format="" --patch ${target}`, ctx);
         if (!stdout.trim()) {
           ctx.ui.notify(`No changes found in commit ${target}.`, "info");
@@ -716,6 +724,11 @@ ${config.minSeverity !== "info" ? `Minimum severity: ${config.minSeverity}` : ""
   }
 
   // ── Git helpers ─────────────────────────────────────────────────────────
+
+  function isSafeGitRef(ref: string): boolean {
+    // Allow alphanumeric, dots, slashes, hyphens, underscores, tildes, carets, at-signs
+    return /^[a-zA-Z0-9._/~^@-]+$/.test(ref);
+  }
 
   async function execGit(command: string, ctx: ExtensionContext): Promise<{ stdout: string; stderr: string }> {
     const { execSync } = await import("node:child_process");
