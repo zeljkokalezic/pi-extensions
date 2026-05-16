@@ -591,6 +591,15 @@ export default function (pi: ExtensionAPI) {
     },
   });
 
+  pi.registerCommand("review:clear", {
+    description: "Clear the code review widget",
+    handler: async (_args, ctx) => {
+      lastReview = undefined;
+      clearWidget(ctx);
+      ctx.ui.notify("Review widget cleared.", "info");
+    },
+  });
+
   pi.registerCommand("review:config", {
     description: "Configure code review categories",
     handler: async (_args, ctx) => {
@@ -753,7 +762,10 @@ ${config.minSeverity !== "info" ? `Minimum severity: ${config.minSeverity}` : ""
 
   // ── before_agent_start hook ─────────────────────────────────────────────
 
-  pi.on("before_agent_start", async (event) => {
+  pi.on("before_agent_start", async (event, ctx) => {
+    // Clear the review widget when a new agent turn starts
+    clearWidget(ctx);
+
     // Inject review context when reviewing code
     if (event.prompt.toLowerCase().includes("review") || event.prompt.includes("code_review")) {
       return {
