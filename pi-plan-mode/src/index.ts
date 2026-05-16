@@ -19,7 +19,7 @@ import { Key } from "@earendil-works/pi-tui";
 import { extractTodoItems, isSafeCommand, markCompletedSteps, type TodoItem } from "./utils.js";
 
 // Tools
-const PLAN_MODE_TOOLS = ["read", "bash", "grep", "find", "ls", "questionnaire", "qna", "code_review"];
+const PLAN_MODE_TOOLS = ["read", "bash", "grep", "find", "ls", "questionnaire", "qna"];
 const NORMAL_MODE_TOOLS = ["read", "bash", "edit", "write", "code_review"];
 
 // Type guard for assistant messages
@@ -170,7 +170,6 @@ Restrictions:
 - Bash is restricted to an allowlist of read-only commands
 
 Ask clarifying questions using the questionnaire tool.
-Use code_review tool for code analysis.
 Use brave-search skill via bash for web research.
 
 Create a detailed numbered plan under a "Plan:" header:
