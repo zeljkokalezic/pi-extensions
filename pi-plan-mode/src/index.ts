@@ -124,6 +124,16 @@ export default function planModeExtension(pi: ExtensionAPI): void {
 
 		const command = event.input.command as string;
 		if (!isSafeCommand(command)) {
+			// Check if the command is actually a registered tool being mis-called via bash
+			const toolNames = PLAN_MODE_TOOLS.filter((t) => !["read", "bash", "grep", "find", "ls"].includes(t));
+			const trimmed = command.trim().split(/\s+/)[0];
+			const misusedTool = toolNames.find((t) => trimmed === t);
+			if (misusedTool) {
+				return {
+					block: true,
+					reason: `"${misusedTool}" is a tool, not a bash command. Call it as a tool with proper parameters, not via bash.\nExample: use the ${misusedTool} tool directly with its schema, not "bash: ${command}"`,
+				};
+			}
 			return {
 				block: true,
 				reason: `Plan mode: command blocked (not allowlisted). Use /plan to disable plan mode first.\nCommand: ${command}`,
@@ -169,8 +179,12 @@ Restrictions:
 - You CANNOT use: edit, write (file modifications are disabled)
 - Bash is restricted to an allowlist of read-only commands
 
-Ask clarifying questions using the questionnaire tool.
-Use brave-search skill via bash for web research.
+Tool usage:
+- "questionnaire" is a TOOL, not a bash command. Call it directly with its parameters schema.
+  Use it to ask the user clarifying questions. Do NOT try to run "questionnaire" via bash.
+- "qna" is a TOOL, not a bash command. Call it directly with its parameters schema.
+- "code_review" is a TOOL, not a bash command. Call it directly with its parameters schema.
+- Bash is ONLY for read-only shell commands (cat, grep, find, ls, git log, etc.)
 
 Create a detailed numbered plan under a "Plan:" header:
 
