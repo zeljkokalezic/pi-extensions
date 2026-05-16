@@ -552,13 +552,15 @@ export default function (pi: ExtensionAPI) {
   // ── Commands ─────────────────────────────────────────────────────────────
 
   pi.registerCommand("review", {
-    description: "Review code (staged changes, unstaged, file, or diff)",
+    description: "Review code (staged, unstaged, file, diff, commit, or last commit)",
     getArgumentCompletions: (prefix: string) => {
       const options = [
         { value: "--staged", label: "--staged", description: "Review staged git changes" },
         { value: "--unstaged", label: "--unstaged", description: "Review unstaged changes" },
         { value: "--file", label: "--file", description: "Review a specific file" },
         { value: "--diff", label: "--diff", description: "Review diff between refs" },
+        { value: "--commit", label: "--commit", description: "Review a specific commit" },
+        { value: "--last-commit", label: "--last-commit", description: "Review the last commit" },
       ];
       const filtered = options.filter((o) => o.value.startsWith(prefix));
       return filtered.length > 0 ? filtered : null;
@@ -578,8 +580,13 @@ export default function (pi: ExtensionAPI) {
       } else if (trimmed.startsWith("--diff ")) {
         const refRange = trimmed.slice("--diff ".length).trim();
         await runReview(ctx, "diff", refRange);
+      } else if (trimmed.startsWith("--commit ")) {
+        const commitRef = trimmed.slice("--commit ".length).trim();
+        await runReview(ctx, "commit", commitRef);
+      } else if (trimmed === "--last-commit") {
+        await runReview(ctx, "commit", "HEAD");
       } else {
-        ctx.ui.notify(`Unknown review option: ${trimmed}. Use: --staged, --unstaged, --file <path>, --diff <ref1..ref2>`, "warning");
+        ctx.ui.notify(`Unknown review option: ${trimmed}. Use: --staged, --unstaged, --file <path>, --diff <ref1..ref2>, --commit <sha>, --last-commit`, "warning");
       }
     },
   });
@@ -642,7 +649,7 @@ export default function (pi: ExtensionAPI) {
 
   async function runReview(
     ctx: ExtensionContext,
-    mode: "staged" | "unstaged" | "file" | "diff",
+    mode: "staged" | "unstaged" | "file" | "diff" | "commit",
     target?: string,
   ): Promise<void> {
     let code = "";
@@ -678,6 +685,15 @@ export default function (pi: ExtensionAPI) {
         }
         code = stdout;
         description = `diff ${target}`;
+      } else if (mode === "commit") {
+        if (!target) return;
+        const { stdout } = await execGit(`show --format="" --patch ${target}`, ctx);
+        if (!stdout.trim()) {
+          ctx.ui.notify(`No changes found in commit ${target}.`, "info");
+          return;
+        }
+        code = stdout;
+        description = `commit ${target}`;
       }
     } catch (err: any) {
       ctx.ui.notify(`Failed to get code: ${err.message}`, "error");
