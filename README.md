@@ -11,6 +11,12 @@ Collection of extensions and skills for [Pi](https://github.com/earendil-works/p
 | [pi-plan-mode](./pi-plan-mode/) | Read-only exploration mode for safe code analysis |
 | [pi-tps-extension](./pi-tps-extension/) | Real-time TPS (tokens per second) metrics |
 
+## Skills
+
+| Skill | Description |
+|-------|-------------|
+| [pi-web-search](./pi-web-search/) | Web search via DuckDuckGo HTML with result summarization |
+
 ## Usage
 
 ### Installing an Extension
